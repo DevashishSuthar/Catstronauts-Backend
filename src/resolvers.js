@@ -4,12 +4,19 @@ const resolvers = {
         tracksForHome: (_, __, { dataSources }) => {
             return dataSources.trackAPI.getTracksForHome();
         },
-        // Get a single track by ID, for the track page
+
+        // get a single track by ID, for the track page
         track: (_, { id }, { dataSources }) => {
             return dataSources.trackAPI.getTrack(id);
-        }
+        },
+
+        // get a single module by ID, for the module detail page
+        module: (_, { id }, { dataSources }) => {
+            return dataSources.trackAPI.getModule(id);
+        },
     },
     Mutation: {
+        // increments a track's numberOfViews property
         incrementTrackViews: async (_, { id }, { dataSources }) => {
             try {
                 const track = await dataSources.trackAPI.incrementTrackViews(id);
@@ -17,26 +24,27 @@ const resolvers = {
                     code: 200,
                     success: true,
                     message: `Successfully incremented number of views for track ${id}`,
-                    track
+                    track,
                 };
-            } catch (error) {
+            } catch (err) {
                 return {
-                    code: error.extensions.response.status,
+                    code: err.extensions.response.status,
                     success: false,
-                    message: error.extensions.response.body,
-                    track: null
+                    message: err.extensions.response.body,
+                    track: null,
                 };
             }
-        }
+        },
     },
     Track: {
         author: ({ authorId }, _, { dataSources }) => {
             return dataSources.trackAPI.getAuthor(authorId);
         },
+
         modules: ({ id }, _, { dataSources }) => {
             return dataSources.trackAPI.getTrackModules(id);
-        }
-    }
+        },
+    },
 };
 
 module.exports = resolvers;
